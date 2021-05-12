@@ -1,29 +1,64 @@
-import express, { response } from 'express';
+import express, { request, response } from 'express';
+import {v4 as uuid} from 'uuid';
 
 const app = express()
+app.use(express.json())
 
-app.get('/users', (req, response)=>{
-    return response.json(
-        [
-            'usuário 1',
-            'usuário 2',
-            'usuário 3',
-            'usuário 4',
-            'usuário 5'
-        ]
-    )
+interface User {
+    id: string,
+    name: string,
+    email: string,
+}
+
+const users: User[] = []
+
+app.get('/users', (request, response)=>{
+    return response.json(users)
 })
 
-app.post('/users', (req, response)=>{
-    return response.json({message: 'Criando usuário'})
+app.post('/users/', (request, response)=>{
+    const {name, email} = request.body
+    const user = {id: uuid(), name, email}
+
+    users.push(user)
+
+    return response.json(user)
+
+
 })
-app.put('/users', (req, response)=>{
-    return response.json({message: 'Atualizando usuário'})
+
+app.put('/users/:id', (request, response)=>{
+    const {id} = request.params
+    const {name, email} = request.body
+
+    const userIndex = users.findIndex((user) => user.id == id)
+
+    if(userIndex < 0){
+        return response.status(404).json({
+            error: 'User not found.'
+        })
+    }
+
+    const user = {id, name, email}
+    users[userIndex] = user
+
+    return response.json(user);
 })
-app.delete('/users', (req, response)=>{
-    return response.json({message: 'Deletando usuário'})
-})
+
+app.delete('/users/:id', (request, response)=>{
+    const {id} = request.params
+    const userIndex = users.findIndex((user) => user.id == id)
+
+    if(userIndex < 0){
+        return response.status(404).json({
+            error: 'User not found.'
+        })
+    }
+
+    users.splice(userIndex, 1);
+    return response.status(204).send();
+})  
 
 app.listen('3333', ()=>{
-    console.log('SUBIU GARAI!!!(☞ﾟヮﾟ)☞')
+    console.log('SUBIU CARAI!!!(☞ﾟヮﾟ)☞')
 })
