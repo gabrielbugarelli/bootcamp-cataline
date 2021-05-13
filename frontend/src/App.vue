@@ -27,13 +27,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios from '@/utils/axios'
-
-interface User {
-  id:string
-  idade:number
-  email:string
-  name:string
-}
+import User from '@/models/User'
 
 export default defineComponent({
   data(){
