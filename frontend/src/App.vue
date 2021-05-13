@@ -4,8 +4,8 @@
       <section>
         <h3 class="tittle"> Adicionar Usuário</h3>
         <form @submit.prevent="createUser">
-          <input type="text" placeholder="Nome" v-model="form.name">
-          <input type="text" placeholder="Email" v-model="form.email">
+          <input type="text" placeholder="Nome" v-model="form.name" required>
+          <input type="text" placeholder="Email" v-model="form.email" required>
           <button type="submit">Adicionar</button>
         </form>
       </section>
@@ -16,7 +16,7 @@
           <li v-for="user in users" :key="user.id">
             <p>Usuário: {{ user.name }}</p>
             <small>Email: {{ user.email }}</small>
-            <a class="destroy"></a>
+            <a class="destroy" @click="destroyUser(user.id)"></a>
           </li>
         </ul>
       </section>
@@ -66,6 +66,15 @@ export default defineComponent({
         this.form.email = ''
       } catch (error){
         console.log(error);
+      }
+    },
+    async destroyUser(id: User['id']){
+      try{ 
+          await axios.delete(`/users/${id}`)
+          const userIndex = this.users.findIndex((user) => user.id == id)
+          this.users.splice(userIndex, 1)
+      }catch(error){
+          console.warn(error);
       }
     }
   }
